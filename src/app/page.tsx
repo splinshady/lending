@@ -10,30 +10,29 @@ interface IFormInput {
   message: String;
 }
 
+const adminList = ['450087970', '435687864']
+
 export default function Home() {
   const {handleSubmit, register} = useForm<IFormInput>();
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     console.log('data', data)
 
-    let response = await fetch('https://api.telegram.org/bot6561817620:AAECBz3N7LPSu8MK6O_xfs6LOAkzYYXrj-U/sendMessage', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify({
-        chat_id: 435687864,
-        text: `Новая заявка!
+    await adminList.forEach(async (admin) => {
+      return await fetch('https://api.telegram.org/bot6561817620:AAECBz3N7LPSu8MK6O_xfs6LOAkzYYXrj-U/sendMessage', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify({
+          chat_id: admin,
+          text: `Новая заявка!
 Почта: ${data.email}, 
 Номер телефона: ${data.phone}, 
 Описание: ${data.message}`,
-      })
-    });
-
-    let result = await response.json();
-    console.log('result', result.message);
+        })
+      });
+    })
   };
-
-
 
   return (
     <main className={styles.main}>
