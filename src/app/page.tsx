@@ -1,94 +1,56 @@
-import Image from 'next/image'
+'use client'
 import styles from './page.module.css'
+import {useForm, SubmitHandler} from "react-hook-form";
+import Input from '@mui/joy/Input';
+import {Button, Textarea} from "@mui/joy";
+
+interface IFormInput {
+  email: String;
+  phone: String;
+  message: String;
+}
 
 export default function Home() {
+  const {handleSubmit, register} = useForm<IFormInput>();
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    console.log('data', data)
+
+    let response = await fetch('https://api.telegram.org/bot6561817620:AAECBz3N7LPSu8MK6O_xfs6LOAkzYYXrj-U/sendMessage', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({
+        chat_id: 435687864,
+        text: `Новая заявка!
+Почта: ${data.email}, 
+Номер телефона: ${data.phone}, 
+Описание: ${data.message}`,
+      })
+    });
+
+    let result = await response.json();
+    console.log('result', result.message);
+  };
+
+
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
       <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+          <Input size="lg" placeholder="Email"
+                 {...register("email")} />
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
+          <Input size="lg" placeholder="Phone"
+                 {...register("phone")} />
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
+          <Textarea minRows={2} placeholder="Message"
+                    {...register("message")}/>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+          <Button className={styles.form_button} size="lg" type={'submit'}>Submit</Button>
+        </form>
       </div>
     </main>
   )
